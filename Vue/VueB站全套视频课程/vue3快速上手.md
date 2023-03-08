@@ -386,10 +386,10 @@ npm run dev
 
 - 作用：创建一个 ref 对象，其value值指向另一个对象中的某个属性。
 - 语法：```const name = toRef(person,'name')```
-- 应用:   要将响应式对象中的某个属性单独提供给外部使用时。
+- 应用:   要将响应式对象中的某个属性（或者多个属性，这时是才分对象的属性，多个输出的）单独提供给外部使用时。
 
 
-- 扩展：```toRefs``` 与```toRef```功能一致，但可以批量创建多个 ref 对象，语法：```toRefs(person)```
+-  扩展：```toRefs``` 与```toRef```功能一致，但可以批量创建多个 ref 对象，语法：```toRefs(person)```
 
 
 # 三、其它 Composition API
@@ -401,12 +401,12 @@ npm run dev
 
 - 什么时候使用?
   -  如果有一个对象数据，结构比较深, 但变化时只是外层属性变化 ===> shallowReactive。
-  -  如果有一个对象数据，后续功能不会修改该对象中的属性，而是生新的对象来替换 ===> shallowRef。
+  -  如果有一个对象数据，后续功能不会修改该对象中的属性，而是生成新的对象来替换 ===> shallowRef。
 
 ## 2.readonly 与 shallowReadonly
 
 - readonly: 让一个响应式数据变为只读的（深只读）。
-- shallowReadonly：让一个响应式数据变为只读的（浅只读）。
+- shallowReadonly：让一个响应式数据变为只读的（浅只读，数据内的第一层数据不让你改，内层次的数据还是可以改的）。
 - 应用场景: 不希望数据被修改时。
 
 ## 3.toRaw 与 markRaw
@@ -422,7 +422,7 @@ npm run dev
 
 ## 4.customRef
 
-- 作用：创建一个自定义的 ref，并对其依赖项跟踪和更新触发进行显式控制。
+- 作用：创建一个自定义的 ref，并对其依赖项跟踪和更新触发进行显式控制。（custom手动挡汽车，ref为自动挡汽车，hh）
 
 - 实现防抖效果：
 
@@ -449,7 +449,7 @@ npm run dev
   							return value
   						},
   						set(newValue){
-  							clearTimeout(timer)
+  							clearTimeout(timer)//防抖
   							timer = setTimeout(()=>{
   								value = newValue
   								trigger() //告诉Vue去更新界面
@@ -471,7 +471,7 @@ npm run dev
 
 ## 5.provide 与 inject
 
-<img src="https://v3.cn.vuejs.org/images/components_provide.png" style="width:300px" />
+<img src="https://cn.vuejs.org/assets/provide-inject.3e0505e4.png" style="width:300px" />
 
 - 作用：实现<strong style="color:#DD5145">祖与后代组件间</strong>通信
 
