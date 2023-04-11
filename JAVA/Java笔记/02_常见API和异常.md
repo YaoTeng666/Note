@@ -354,15 +354,23 @@ Date date =simpledatefromat.parse(s);
 
 
 
-Exception
+## 26、Exception
+
+所有的异常的父类
+
+catch的执行顺序
+
+![image-20230409171640472](02_常见API和异常.assets/image-20230409171640472.png)
 
 
 
+## 27、throwable的成员方法
 
+public string getmessage 返回此throwable的详细消息字符串
 
+Public string tostring 返回此可抛出的简短描述
 
-
-
+public void printstacktrace() 把异常的错误信息输出在控制台
 
 
 
