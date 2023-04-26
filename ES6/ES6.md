@@ -161,7 +161,7 @@ const tfboys=['AA','BB','CC']
 function chunwan(){
     console.log(arguments);
 }
-chunwan(...tfboys);
+chunwan(...tfboys);//0:'AA' 1:'BB' 2:'CC'
 ```
 
 ## 1.9 Symbol
