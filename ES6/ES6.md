@@ -984,12 +984,15 @@ async function main(){
 
 
 
-## 4.1 运算扩展符与rest参数
+## 4.1 ES9中运算扩展符与rest参数
+
+rest参数与spread扩展运算符在ES6中已经引用，不过es6中只针对数组，
+
+在es9中为对象提供了像数组一样的rest参数和扩展运算符
 
 ```java
 <script>
-    function connect({
-    host,port,...user}){
+    function connect({host,port,...user}){
    
         console.log(host);
         console.log(port);
