@@ -1032,6 +1032,28 @@ rest参数与spread扩展运算符在ES6中已经引用，不过es6中只针对�
 
 
 
+## 4.2 正则扩展-命名扩展
+
+```js
+//取出网站名称还有名称
+let str='<a href="https://www.baidu.com/">百度</a>'
+const reg =/<a href="(?<url>.*)">(?<text>.*)<\/a>/;
+const result =reg.exec(str);
+console.log(result);
+```
+
+
+
+## 4.3 正则扩展-正则断言
+
+![image-20230426220919214](ES6.assets/image-20230426220919214.png)
+
+
+
+## 4.4 正则扩展dotall模式
+
+![image-20230426221047203](ES6.assets/image-20230426221047203.png)
+
 
 
 ## 5.1 对象扩展方法
@@ -1043,20 +1065,28 @@ rest参数与spread扩展运算符在ES6中已经引用，不过es6中只针对�
        ['name','RHF'],
        ['cities','成都','武汉']
    ])
-   console.log(res) //{name: "RHF", cities: "成都"}
+   console.log(res) //{name: " RHF", cities: "成都"}
 
    //Map
    const m = new Map();
    m.set('name','ranhaifeng')
    const result = Object.fromEntries(m)
    console.log(result); //{name: "ranhaifeng"}
+
+//Object.fromEntries——二维数组转化为对象
+//Object.entries——对象转化为二维数组
+const arr =Object.entries({
+  name:"名字"
+})
+console.log(arr);//["name","名字"]
+
 </script>
 ```
 
+  
 
 
-
-## 5.2 字符串扩展方法
+## 5.2 字符串扩展方法——trimStart和trimEnd
 
 ```java
 <script>
@@ -1075,13 +1105,16 @@ rest参数与spread扩展运算符在ES6中已经引用，不过es6中只针对�
 
 ```java
 <script>
+  	//将多维数组转化为低位数组
     const arr = [1,2,3,[4,5,6,[7,8,9]]]
     //参数为深度，是一个数字
     console.log(arr.flat(2)) //[1,2,3,4,5,6,7,8,9]
 
+  
 	const arr2=[1,2,3,4]
-    const result = arr2.flatmap(item => [item * 10]); //如果map的结果是一个多维数组可以进行flat 是两个操作的结合
-	
+  const result = arr2.flatmap(item => [item * 10]); //如果map的结果是一个多维数组可以进行flat 是两个操作的结合
+//flat和map的结合
+
 </script>
 ```
 
