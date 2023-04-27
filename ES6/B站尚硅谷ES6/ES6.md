@@ -1,3 +1,5 @@
+相关地址：https://blog.csdn.net/lyyrhf/article/details/115338763
+
 ## 1.1 let和const命令
 
 * 变量不能重复声明
@@ -174,64 +176,255 @@ Symbol特点：
 * Symbol值不能与其他数据进行运算
 * Symbol定义的对象属性不能使用for...in循环遍历，但是可以使用Reflect.ownKeys来获取对象的所有键名
 
+特性：
+
+1、创建
+
+```js
+let s = Symbol('aa');
+let s2= Symbol('aa');
+console.log(s===s2)   //false
+
+let s3 = Symbol.for('bb');
+let s4 = Symbol.for('bb');
+comsole.log(s3===s4) ///true
+```
+
+2、不能与其他数据进行运算
+
+```js
+let result = s + 100  //error
+let result = s > 100  //error
+let result = s + s  //error
+```
+
+3、Symbol内置值
+
+```js
+class Person {
+    static [Symbol.hasInstance](param){
+        console.log(param);
+        console.log("我被用来检测了")；
+        return false;
+    }
+}
+let o = {};
+console.log(o instanceof Person); //我被用来检测了，false
+```
+
+应用：
+
+1、给对象添加方法方式一
+
+```js
+let game = {
+    name : 'ran'
+}
+let methods = {
+    up:Symbol()
+    down:Symbol()
+}
+game[methods.up]=function(){
+    console.log('aaa');
+}
+game[methods.down]=function(){
+    console.log('bbb');
+}
+console.log(game)    // name: 'ran',Symbol(),Symbol()
+```
+
+2、给对象添加方法方式二
+
+```js
+let youxi = {
+    name: '狼人杀'，
+    [Symbol('say')]:function(){
+        console.log('阿萨德')
+    }
+}
+console.log(youxi)    // name:'狼人杀',Symbol(say)
+
+```
+
 ## 1.10 迭代器
+
+​	迭代器是一种接口，为各种不同的数据结构提供统一的访问机制，任何数据结构只要部署Iterator接口，就可以完成遍历操作。
+
+原理：
+
+（1）创建一个指针对象，指向数据结构的起始位置，
+
+（2）第一次调用对象next()方法，指针自动指向数据结构第一个成员，
+
+（3）接下来不断调用next（），指针一直往后移动，直到指向最后一个成员
+
+（4）没调用next（）返回一个包含value和done属性的对象 
+
+1、ES6创造了一种新的遍历命令for...of循环，Iterator接口主要供for...of消费
+
+2、常见数据类型有：Array、Arguments、Set、Map、String、TypeArray、NodeList
 
 ```js
 const xiyou=['AA','BB','CC','DD'];
-
+// for(let v of xiyou){
+   
+//     console.log(v)  // 'AA','BB','CC','DD'  //for in保存的是键名，for of保存的是键值
+// }
 let iterator = xiyou[Symbol.iterator]();
-console.log(iterator.next());
-console.log(iterator.next());
+console.log(iterator.next()); //{
+   {value:'唐僧'，done:false}}
+console.log(iterator.next()); //{
+   {value:'孙悟空'，done:false}}
 ```
 
 ```js
 const banji = {
-    name : "终极一班",
-    stus: [
-        'aa',
-        'bb',
-        'cc',
-        'dd'
-    ],
-    [Symbol.iterator](){
-        let index = 0;
-        let _this = this;
-        return {
-            next: () => {
-                if(index < this.stus.length){
-                    const result = {value: _this.stus[index],done: false};
-
-                    index++;
-
-                    return result;
-                }else {
-                    return {value: underfined,done:true};
-                }
-            }
+  name: "终极一班",
+  stus: ["aa", "bb", "cc", "dd"],
+  [Symbol.iterator]() {
+    let index = 0;
+    let _this = this;
+    return {
+      next: () => {
+        if (index < this.stus.length) {
+          const result = {
+            value: _this.stus[index],
+            done: false,
+          };
+          //下标自增
+          index++;
+          //返回结果
+          return result;
+        } else {
+          return {
+            value: underfined,
+            done: true,
+          };
         }
-    }
+      },
+    };
+  },
+};
+for (let v of banji) {
+  console.log(v); // aa bb cc dd
 }
-for(let v of banji){
-    console.log(v);
-}
+
 ```
 
 ## 1.11 生成器
 
 生成器函数是ES6提供的一种异步编程解决方案，语法行为与传统函数完全不同，是一种特殊的函数
 
+yield关键字解读——https://blog.csdn.net/qq_44993242/article/details/115904806
+
 ```js
 function * gen (){
-    yield '耳朵'；
+       //函数名和function中间有一个 * 
+    yield '耳朵'；     //yield是函数代码的分隔符
     yield '尾巴'；
     yield '真奇怪'；
 }
 let iterator = gen();
-console.log(iteretor.next());
-
-console.log(iteretor.next());
-console.log(iteretor.next());
+console.log(iteretor.next()); 
+//{value:'耳朵',done:false} next（）执行第一段，并且返回yield后面的值
+console.log(iteretor.next()); //{value:'尾巴',done:false}
+console.log(iteretor.next()); //{value:'真奇怪',done:false}
 ```
+
+应用：
+
+1、生成器函数的参数传递
+
+```js
+function * gen(args){
+    console.log(args);
+    let one = yield 111;
+    console.log(one);
+    let two = yield 222;
+    console.log(two);
+    let three = yield 333;
+    console.log(three);
+}
+//执行获取迭代器对象
+let iterator = gen('AAA');
+console.log(iterator.next());
+console.log(iterator.next('BBB'));  //next中传入的BBB将作为yield 111的返回结果
+console.log(iterator.next('CCC'));  //next中传入的CCC将作为yield 222的返回结果
+console.log(iterator.next('DDD'));  //next中传入的DDD将作为yield 333的返回结果
+
+```
+
+实例1：用生成器函数的方式解决回调地狱问题
+
+```js
+function one(){
+    setTimeout(()=>{
+        console.log('111')
+        iterator.next()
+    },1000)
+}
+function two(){
+    setTimeout(()=>{
+        console.log('222')
+        iterator.next();
+    },2000)
+}
+function three(){
+    setTimeout(()=>{
+        console.log('333')
+        iterator.next();
+    },3000)
+}
+
+function * gen(){
+    yield one();
+    yield two();
+    yield three();
+}
+
+let iterator = gen();
+iterator.next();
+
+```
+
+实例2：模拟异步获取数据
+
+```js
+//模拟获取 用户数据 订单数据 商品数据
+function one(){
+    setTimeout(()=>{
+        let data='用户数据';
+        iterator.next(data)
+    },1000)
+}
+function two(){
+    setTimeout(()=>{
+        let data='订单数据';
+        iterator.next(data)
+    },2000)
+}
+function three(){
+    setTimeout(()=>{
+        let data='商品数据';
+        iterator.next(data)
+    },3000)
+}
+
+function * gen(){
+    let users=yield one();
+    console.log(users)
+    let orders=yield two();
+    console.log(orders)
+    let goods=yield three();
+    console.log(goods)
+}
+
+let iterator = gen();
+iterator.next();
+
+```
+
+
 
 ## 1.12 Promise
 
@@ -1175,7 +1368,7 @@ console.log(s.description) //尚硅谷
 
 
 
-## 5.6 Promise
+## 5.6 Promise.allSettled、all、String.prototype.matchAll方法
 
 ```java
 <script>
@@ -1209,6 +1402,26 @@ console.log(s.description) //尚硅谷
     const result = Promise.all([p1,p2])
     console.log(result)
 
+   //String.prototype.matchAll方法
+   let str=`<ul>
+        <li>
+        	<a>肖生克的救赎</a>
+        	<p>上映日期：1994-09-10</p>
+        </li>
+        <li>
+        	<a>阿甘正传</a>
+        	<p>上映日期：1994-07-10</p>
+        </li>
+        `
+     //声明正则   
+    const reg =/<li>.*?<a>(.*?)<\/a>.*?<p>(.*?)<\/p>/sg
+     //调用方法
+    const result =str.matchAll(reg)
+     
+    const arr =[...result];
+	//0:        <li><a>肖生克的救赎</a><p>上映日期：1994-09-10</p></li>
+	//1:肖生克的救赎
+	//2:上映日期：1994-09-10
 </script>
 ```
 
@@ -1258,8 +1471,9 @@ btn.onclick = function(){
 
 
 
-
 ## 5.9 BigInt类型
+
+主要用于大数值的运算
 
 ```java
 //大整型
