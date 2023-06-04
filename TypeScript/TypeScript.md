@@ -545,5 +545,13 @@ class Person{
 
 
 
+2、修饰符
+
+private：只能在内部使用
+
+protected：给子类和内部去使用的
+
+public：公开的
+
 
 
