@@ -555,3 +555,500 @@ public：公开的
 
 
 
+3、static 静态属性和静态方法
+
+我们用static 定义的属性 不可以通过this 去访问 只能通过类名去调用
+
+static 静态函数 同样也是不能通过this 去调用 也是通过类名去调用
+
+
+
+4、interface 定义 类
+
+```js
+ 
+interface PersonClass {
+    get(type: boolean): boolean
+}
+ 
+interface PersonClass2{
+    set():void,
+    asd:string
+}
+ 
+class A {
+    name: string
+    constructor() {
+        this.name = "123"
+    }
+}
+ 
+class Person extends A implements PersonClass,PersonClass2 {
+    asd: string
+    constructor() {
+        super()
+        this.asd = '123'
+    }
+    get(type:boolean) {
+        return type
+    }
+    set () {
+ 
+    }
+}
+```
+
+
+
+5、抽象类
+
+应用场景如果你写的类实例化之后毫无用处此时我可以把他定义为抽象类
+
+或者你也可以把他作为一个基类-> 通过继承一个派生类去实现基类的一些方法
+
+
+
+我们在A类定义了 getName 抽象方法但为实现
+
+我们B类实现了A定义的抽象方法 如不实现就不报错 **我们定义的抽象方法必须在派生类实现**
+
+```js
+abstract class A {
+   name: string
+   constructor(name: string) {
+      this.name = name;
+   }
+   print(): string {
+      return this.name
+   }
+ 
+   abstract getName(): string
+}
+ 
+class B extends A {
+   constructor() {
+      super('小满')
+   }
+   getName(): string {
+      return this.name
+   }
+}
+ 
+let b = new B();
+ 
+console.log(b.getName());
+```
+
+抽象类案例：
+
+```tsx
+//1. class 的基本用法 继承 和 类型约束
+//2. class 的修饰符 readonly  private protected public
+//3. super 原理
+//4. 静态方法
+//5. get set
+interface Options {
+    el: string | HTMLElement
+}
+ 
+interface VueCls {
+    init(): void
+    options: Options
+}
+ 
+interface Vnode {
+    tag: string
+    text?: string
+    props?: {
+        id?: number | string
+        key?: number | string | object
+    }
+    children?: Vnode[]
+}
+ 
+class Dom {
+    constructor() {
+ 
+    }
+ 
+    private createElement(el: string): HTMLElement {
+        return document.createElement(el)
+    }
+ 
+    protected setText(el: Element, text: string | null) {
+        el.textContent = text;
+    }
+ 
+    protected render(createElement: Vnode): HTMLElement {
+        const el = this.createElement(createElement.tag)
+        if (createElement.children && Array.isArray(createElement.children)) {
+            createElement.children.forEach(item => {
+                const child = this.render(item)
+                this.setText(child, item.text ?? null)
+                el.appendChild(child)
+            })
+        } else {
+            this.setText(el, createElement.text ?? null)
+        }
+        return el;
+    }
+}
+ 
+ 
+ 
+class Vue extends Dom implements VueCls {
+    options: Options
+    constructor(options: Options) {
+        super()
+        this.options = options;
+        this.init()
+    }
+ 
+   static version () {
+      return '1.0.0'
+   }
+ 
+   public init() {
+        let app = typeof this.options.el == 'string' ? document.querySelector(this.options.el) : this.options.el;
+        let data: Vnode = {
+            tag: "div",
+            props: {
+                id: 1,
+                key: 1
+            },
+            children: [
+                {
+                    tag: "div",
+                    text: "子集1",
+                },
+                {
+                    tag: "div",
+                    text: "子集2"
+                }
+            ]
+        }
+        app?.appendChild(this.render(data))
+        console.log(app);
+ 
+        this.mount(app as Element)
+    }
+ 
+   public mount(app: Element) {
+        document.body.append(app)
+    }
+}
+ 
+ 
+const v = new Vue({
+    el: "#app"
+})
+```
+
+
+
+
+
+## 10、元组类型
+
+使用场景： 如果需要一个固定大小的不同类型值的集合，我们需要使用元组。
+
+
+
+元组介绍：元组就是数组的变种。元组（Tuple）是固定数量的不同类型的元素的组合。
+
+元组与集合的不同之处在于，元组中的元素类型可以是不同的，而且数量固定。元组的好处在于可以把多个元素作为一个单元传递。如果一个方法需要返回多个值，可以把这多个值作为元组返回，而不需要创建额外的类来表示。
+
+```tsx
+let arr:[number,string] = [1,'string']
+let arr2: readonly [number,boolean,string,undefined] = [1,true,'sring',undefined]
+
+//当赋值或访问一个已知索引的元素时，会得到正确的类型：
+let arr:[number,string] = [1,'string']
+arr[0].length //error
+arr[1].length //success
+//数字是没有length 的
+
+//元组类型还可以支持自定义名称和变为可选的
+let a:[x:number,y?:boolean] = [1]
+```
+
+
+
+越界元素：
+
+```tsx
+let arr:[number,string] = [1,'string']
+arr.push(true)//error
+```
+
+使用场景：
+
+```tsx
+let excel: [string, string, number, string][] = [
+    ['title', 'name', 1, '123'],
+    ['title', 'name', 1, '123'],
+    ['title', 'name', 1, '123'],
+    ['title', 'name', 1, '123'],
+    ['title', 'name', 1, '123'],
+]
+```
+
+
+
+## 11、枚举类型
+
+在javaScript中是没有枚举的概念的TS帮我们定义了枚举这个类型
+
+1、数字枚举
+
+例如 红绿蓝 Red = 0 Green = 1 Blue= 2 分别代表红色0 绿色为1 蓝色为2
+
+```ts
+enum Types{
+   Red = 0,
+   Green = 1,
+   BLue = 2
+}
+//默认就是从0开始的 可以不写值
+```
+
+增长枚举——只有数字枚举有
+
+```ts
+enum Types{
+   Red = 1,
+   Green,
+   BLue
+}
+```
+
+如上，我们定义了一个数字枚举， Red使用初始化为 `1`。 其余的成员会从 `1`开始自动增长。 换句话说， Type`.Red`的值为 `1`， `Green`为 `2`， `Blue`为 `3`。
+
+2、字符串枚举
+
+字符串枚举的概念很简单。 在一个字符串枚举里，每个成员都必须用字符串[字面量](https://so.csdn.net/so/search?q=字面量&spm=1001.2101.3001.7020)，或另外一个字符串枚举成员进行初始化。
+
+```tsx
+enum Types{
+   Red = 'red',
+   Green = 'green',
+   BLue = 'blue'
+}
+```
+
+由于字符串枚举没有自增长的行为，字符串枚举可以很好的序列化。 换句话说，如果你正在调试并且必须要读一个数字枚举的运行时的值，这个值通常是很难读的 - 它并不能表达有用的信息，字符串枚举允许你提供一个运行时有意义的并且可读的值，独立于枚举成员的名字。
+
+3、异构枚举
+
+枚举可以混合字符串和数字成员
+
+```tsx
+enum Types{
+   No = "No",
+   Yes = 1,
+}
+```
+
+4、接口枚举
+
+定义一个枚举Types 定义一个接口A 他有一个属性red 值为Types.yyds
+
+```tsx
+   enum Types {
+      yyds,
+      dddd
+   }
+   interface A {
+      red:Types.yyds
+   }
+ 
+   let obj:A = {
+      red:Types.yyds
+   }
+```
+
+5、const枚举
+
+let  和 var 都是不允许的声明只能使用const
+
+大多数情况下，枚举是十分有效的方案。 然而在某些情况下需求很严格。 为了避免在额外生成的代码上的开销和额外的非直接的对枚举成员的访问，我们可以使用 const枚举。 常量枚举通过在枚举上使用 const修饰符来定义
+
+const 声明的枚举会被编译成常量
+
+普通声明的枚举编译完后是个对象
+
+```tsx
+const enum Types{
+   No = "No",
+   Yes = 1,
+}
+```
+
+6、反向映射
+
+它包含了正向映射（ `name` -> `value`）和反向映射（ `value` -> `name`）
+
+ 要注意的是 *不会*为字符串枚举成员生成反向映射。
+
+```tsx
+enum Enum {
+   fall
+}
+let a = Enum.fall;
+console.log(a); //0
+let nameOfA = Enum[a]; 
+console.log(nameOfA); //fall
+```
+
+
+
+## 12、类型推论
+
+什么是类型推论——let str = "小满zs"
+
+1.我声明了一个变量但是没有定义类型[TypeScript](https://so.csdn.net/so/search?q=TypeScript&spm=1001.2101.3001.7020) 会在没有明确的指定类型的时候推测出一个类型，这就是类型推论
+
+2、如果你声明变量没有定义类型也没有赋值这时候TS会推断成any类型可以进行任何操作
+
+
+
+类型别名：type关键字多用于复合类型
+
+定义类型别名：
+
+```tsx
+type str = string
+ 
+let s:str = "我是小满"
+ 
+console.log(s);
+```
+
+定义函数别名：
+
+```tsx
+type str = () => string
+ 
+let s: str = () => "我是小满"
+ 
+console.log(s);
+```
+
+定义联合类型别名：
+
+```tsx
+type str = string | number
+
+let s: str = 123
+ 
+let s2: str = '123'
+ 
+console.log(s,s2);
+```
+
+定义值的别名：
+
+```tsx
+type value = boolean | 0 | '213'
+let s:value = true
+//变量s的值  只能是上面value定义的值
+```
+
+type 和 interface 还是一些区别的 虽然都可以定义类型
+
+1.interface可以继承  type 只能通过 & 交叉类型合并
+
+2.type 可以定义 联合类型 和 可以使用一些操作符 interface不行
+
+3.interface 遇到重名的会合并 type 不行
+
+![类型排行](https://img-blog.csdnimg.cn/5e0a471d4f894d6492543f6ee1243f34.png)
+
+## 13、never类型
+
+ts将使用 never 类型来表示不应该存在的状态(很抽象是不是)
+
+```tsx
+// 返回never的函数必须存在无法达到的终点
+ 
+// 因为必定抛出异常，所以 error 将不会有返回值
+function error(message: string): never {
+    throw new Error(message);
+}
+ 
+// 因为存在死循环，所以 loop 将不会有返回值
+function loop(): never {
+    while (true) {
+    }
+}
+```
+
+never与void的差异
+
+```ts
+    //void类型只是没有返回值 但本身不会出错
+    function Void():void {
+        console.log();
+    }
+ 
+    //只会抛出异常没有返回值
+    function Never():never {
+    throw new Error('aaa')
+    }
+```
+
+差异二：当我们鼠标移上去的时候会发现 只有void和number  never在联合类型中会被直接移除
+
+```
+type A = void | number | never
+```
+
+
+
+### never 类型的一个应用场景
+
+```tsx
+type A = '小满' | '大满' | '超大满' 
+ 
+function isXiaoMan(value:A) {
+   switch (value) {
+       case "小满":
+           break 
+       case "大满":
+          break 
+       case "超大满":
+          break 
+       default:
+          //是用于场景兜底逻辑
+          const error:never = value;
+          return error
+   }
+}
+```
+
+比如新来了一个同事他新增了一个篮球，我们必须手动找到所有 switch 代码并处理，否则将有可能引入 BUG 。
+
+而且这将是一个“隐蔽型”的BUG，如果回归面不够广，很难发现此类BUG。
+
+那 TS 有没有办法帮助我们在类型检查阶段发现这个问题呢？
+
+```tsx
+type A = '小满' | '大满' | '超大满' | "小小满"
+ 
+function isXiaoMan(value:A) {
+   switch (value) {
+       case "小满":
+           break 
+       case "大满":
+          break 
+       case "超大满":
+          break 
+       default:
+          //是用于场景兜底逻辑
+          const error:never = value;
+          return error
+   }
+}
+```
+
+由于任何类型都不能赋值给 `never` 类型的变量，所以当存在进入 `default` 分支的可能性时，TS的类型检查会及时帮我们发现这个问题
