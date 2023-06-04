@@ -1052,3 +1052,71 @@ function isXiaoMan(value:A) {
 ```
 
 由于任何类型都不能赋值给 `never` 类型的变量，所以当存在进入 `default` 分支的可能性时，TS的类型检查会及时帮我们发现这个问题
+
+
+
+## 14、symbol类型
+
+ `symbol`类型的值是通过`Symbol`构造函数创建的。
+
+可以传递参做为唯一标识 只支持 string 和 [number类型](https://so.csdn.net/so/search?q=number类型&spm=1001.2101.3001.7020)的参数
+
+```tsx
+//1、介绍
+let a1:symbol =Symbol(1)//唯一的
+let a2:symbol =Symbol(1)//唯一的
+//for symbol for全局symbol有没有注册过这个key，如果有直接拿来用，没有的话他就去创建一个
+
+//2.用作对象属性的键
+let sym = Symbol();
+let obj = {
+    [sym]: "value"
+};
+console.log(obj[sym]); // "value"
+
+//3.使用symbol定义的属性，是不能通过如下方式遍历拿到的
+const symbol1 = Symbol('666')
+const symbol2 = Symbol('777')
+const obj1= {
+   [symbol1]: '小满',
+   [symbol2]: '二蛋',
+   age: 19,
+   sex: '女'
+}
+// 1 for in 遍历
+for (const key in obj1) {
+   // 注意在console看key,是不是没有遍历到symbol1
+   console.log(key)// name sex
+}
+// 2 Object.keys 遍历
+Object.keys(obj1)
+console.log(Object.keys(obj1))//['name','sex']
+// 3 getOwnPropertyNames
+console.log(Object.getOwnPropertyNames(obj1))//['name','sex']
+// 4 JSON.stringfy
+console.log(JSON.stringify(obj1))
+
+
+//如何拿到
+// 1 拿到具体的symbol 属性,对象中有几个就会拿到几个
+Object.getOwnPropertySymbols(obj1)
+console.log(Object.getOwnPropertySymbols(obj1))//[Symbol('666'),Symbol('777')]
+// 2 es6 的 Reflect 拿到对象的所有属性
+Reflect.ownKeys(obj1)
+console.log(Reflect.ownKeys(obj1))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
