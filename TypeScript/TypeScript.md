@@ -1242,3 +1242,219 @@ Symbol.unscopables
 对象，它自己拥有的属性会被with作用域排除在外。
 
 ## 15、泛型
+
+[泛型](https://so.csdn.net/so/search?q=泛型&spm=1001.2101.3001.7020)在TypeScript 是很重要的东西 例如vue3 是用ts编写的 里面用到了非常多的泛型
+
+### 15.1 函数泛型
+
+我写了两个函数一个是数字类型的函数，另一个是字符串类型的函数,其实就是类型不同，
+
+实现的功能是一样的，这时候我们就可以使用泛型来优化
+
+```tsx
+function num (a:number,b:number) : Array<number> {
+    return [a ,b];
+}
+num(1,2)
+function str (a:string,b:string) : Array<string> {
+    return [a ,b];
+}
+str('独孤','求败')
+```
+
+泛型优化
+
+语法为函数名字后面跟一个<参数名> 参数名可以随便写 例如我这儿写了T
+
+当我们使用这个函数的时候把参数的类型传进去就可以了 （也就是动态类型）
+
+```tsx
+function Add<T>(a: T, b: T): Array<T>  {
+    return [a,b]
+}
+ 
+Add<number>(1,2)
+Add<string>('1','2')
+```
+
+我们也可以使用不同的泛型参数名，只要在数量上和使用方式上能对应上就可以。
+
+```tsx
+function Sub<T,U>(a:T,b:U):Array<T|U> {
+    const params:Array<T|U> = [a,b]
+    return params
+}
+ 
+ 
+Sub<Boolean,number>(false,1)
+```
+
+### 15.2 定义泛型接口
+
+声明接口的时候 在名字后面加一个<参数>
+
+ 使用的时候传递类型
+
+```tsx
+interface MyInter<T> {
+   (arg: T): T
+}
+ 
+function fn<T>(arg: T): T {
+   return arg
+}
+ 
+let result: MyInter<number> = fn
+ 
+result(123)
+```
+
+**对象字面量泛型**
+
+```tsx
+let foo: { <T>(arg: T): T }
+ 
+foo = function <T>(arg:T):T {
+   return arg
+}
+ 
+foo(123)
+```
+
+**泛型约束**
+
+我们期望在一个泛型的变量上面，获取其`length`参数，但是，有的数据类型是没有`length`属性的
+
+```tsx
+function getLegnth<T>(arg:T) {
+  return arg.length
+}
+```
+
+这时候我们就可以使用泛型约束
+
+于是，我们就得对使用的泛型进行约束，我们约束其为具有`length`属性的类型，这里我们会用到`interface`,代码如下
+
+```tsx
+interface Len {
+   length:number
+}
+ 
+function getLegnth<T extends Len>(arg:T) {
+  return arg.length
+}
+//有length的数组，字符等
+getLegnth<string>('123')
+
+
+//简单点的约束
+function dd<T extends number>(age,b){
+  return a+b
+}
+```
+
+泛型案例：
+
+```tsx
+const axios ={
+  get<T>(url:string):Promise<T>{
+    return new Promise((resolve,reject)=>{
+      let xhr:XMLHttpRequest =new XMLHttpRequest()
+      xhr.open('get',url)
+      xhr.onreadystatechange=()=>{
+        if(xhr.readyState==4&&xhr.status==200){
+          resolve(json.parse(xhr.responseText))
+        }
+      }
+      xhr.send(null)
+    })
+  }
+}
+
+interface Data{
+  message:string
+  code:number
+}
+
+axios.get<Data>('./data.json').then(res=>{
+  console.log(res);//这样就可以使用T自动来推断
+})
+```
+
+**使用keyof约束对象**
+
+其中使用了TS泛型和泛型约束。首先定义了T类型并使用extends关键字继承object类型的子类型，然后使用keyof操作符获取T类型的所有键，它的返回 类型是联合 类型，最后利用extends关键字约束 K类型必须为keyof T联合类型的子类型
+
+```tsx
+//只是看看
+let obj ={
+  name:"xiaoman"
+  sex:"女"
+}
+type Key =keyof typeof obj
+function ob<T extends object,K extends keyof T>(obj:T,key:K){
+  return obj[key]
+}
+
+//新写法
+function prop<T, K extends keyof T>(obj: T, key: K) {
+   return obj[key]
+}
+
+let o = { a: 1, b: 2, c: 3 }
+
+prop(o, 'a') 
+prop(o, 'd') //此时就会报错发现找不到
+
+
+//demo
+interface Data{
+  name:string
+  age:number
+  sex:string
+}
+type Options<T extends object>={
+  readonly [Key in keyof T]:T[Key]
+}
+type B=Options<Data>
+```
+
+**泛型类**
+
+声明方法跟函数类似名称后面定义<类型>
+
+使用的时候确定类型new Sub<number>()
+
+```tsx
+class Sub<T>{
+   attr: T[] = [];
+   add (a:T):T[] {
+      return [a]
+   }
+}
+ 
+let s = new Sub<number>()
+s.attr = [1,2,3]
+s.add(123)
+ 
+let str = new Sub<string>()
+str.attr = ['1','2','3']
+str.add('123')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
