@@ -1444,13 +1444,208 @@ str.add('123')
 
 
 
+## 16、tsconfig.json配置文件
+
+配置详解
+
+```tsx
+"compilerOptions": {
+  "incremental": true, // TS编译器在第一次编译之后会生成一个存储编译信息的文件，第二次编译会在第一次的基础上进行增量编译，可以提高编译的速度
+  "tsBuildInfoFile": "./buildFile", // 增量编译文件的存储位置
+  "diagnostics": true, // 打印诊断信息 
+  "target": "ES5", // 目标语言的版本
+  "module": "CommonJS", // 生成代码的模板标准
+  "outFile": "./app.js", // 将多个相互依赖的文件生成一个文件，可以用在AMD模块中，即开启时应设置"module": "AMD",
+  "lib": ["DOM", "ES2015", "ScriptHost", "ES2019.Array"], // TS需要引用的库，即声明文件，es5 默认引用dom、es5、scripthost,如需要使用es的高级版本特性，通常都需要配置，如es8的数组新特性需要引入"ES2019.Array",
+  "allowJS": true, // 允许编译器编译JS，JSX文件
+  "checkJs": true, // 允许在JS文件中报错，通常与allowJS一起使用
+  "outDir": "./dist", // 指定输出目录
+  "rootDir": "./", // 指定输出文件目录(用于输出)，用于控制输出目录结构
+  "declaration": true, // 生成声明文件，开启后会自动生成声明文件
+  "declarationDir": "./file", // 指定生成声明文件存放目录
+  "emitDeclarationOnly": true, // 只生成声明文件，而不会生成js文件
+  "sourceMap": true, // 生成目标文件的sourceMap文件
+  "inlineSourceMap": true, // 生成目标文件的inline SourceMap，inline SourceMap会包含在生成的js文件中
+  "declarationMap": true, // 为声明文件生成sourceMap
+  "typeRoots": [], // 声明文件目录，默认时node_modules/@types
+  "types": [], // 加载的声明文件包
+  "removeComments":true, // 删除注释 
+  "noEmit": true, // 不输出文件,即编译后不会生成任何js文件
+  "noEmitOnError": true, // 发送错误时不输出任何文件
+  "noEmitHelpers": true, // 不生成helper函数，减小体积，需要额外安装，常配合importHelpers一起使用
+  "importHelpers": true, // 通过tslib引入helper函数，文件必须是模块
+  "downlevelIteration": true, // 降级遍历器实现，如果目标源是es3/5，那么遍历器会有降级的实现
+  "strict": true, // 开启所有严格的类型检查
+  "alwaysStrict": true, // 在代码中注入'use strict'
+  "noImplicitAny": true, // 不允许隐式的any类型
+  "strictNullChecks": true, // 不允许把null、undefined赋值给其他类型的变量
+  "strictFunctionTypes": true, // 不允许函数参数双向协变
+  "strictPropertyInitialization": true, // 类的实例属性必须初始化
+  "strictBindCallApply": true, // 严格的bind/call/apply检查
+  "noImplicitThis": true, // 不允许this有隐式的any类型
+  "noUnusedLocals": true, // 检查只声明、未使用的局部变量(只提示不报错)
+  "noUnusedParameters": true, // 检查未使用的函数参数(只提示不报错)
+  "noFallthroughCasesInSwitch": true, // 防止switch语句贯穿(即如果没有break语句后面不会执行)
+  "noImplicitReturns": true, //每个分支都会有返回值
+  "esModuleInterop": true, // 允许export=导出，由import from 导入
+  "allowUmdGlobalAccess": true, // 允许在模块中全局变量的方式访问umd模块
+  "moduleResolution": "node", // 模块解析策略，ts默认用node的解析策略，即相对的方式导入
+  "baseUrl": "./", // 解析非相对模块的基地址，默认是当前目录
+  "paths": { // 路径映射，相对于baseUrl
+    // 如使用jq时不想使用默认版本，而需要手动指定版本，可进行如下配置
+    "jquery": ["node_modules/jquery/dist/jquery.min.js"]
+  },
+  "rootDirs": ["src","out"], // 将多个目录放在一个虚拟目录下，用于运行时，即编译后引入文件的位置可能发生变化，这也设置可以虚拟src和out在同一个目录下，不用再去改变路径也不会报错
+  "listEmittedFiles": true, // 打印输出文件
+  "listFiles": true// 打印编译的文件(包括引用的声明文件)
+}
+ 
+// 指定一个匹配列表（属于自动指定该路径下的所有ts相关文件）
+"include": [
+   "src/**/*"
+],
+// 指定一个排除列表（include的反向操作）
+ "exclude": [
+   "demo.ts"
+],
+// 指定哪些文件使用该配置（属于手动一个个指定文件）
+ "files": [
+   "demo.ts"
+]
+```
 
 
 
+## 17、namespace命名空间
 
+我们在工作中无法避免全局变量造成的污染，[TypeScript](https://so.csdn.net/so/search?q=TypeScript&spm=1001.2101.3001.7020)提供了namespace 避免这个问题出现
 
+- 内部模块，主要用于组织代码，避免命名冲突。
+- 命名空间内的类默认私有
+- 通过 `export` 暴露
+- 通过 `namespace` 关键字定义
 
+TypeScript与ECMAScript 2015一样，任何包含顶级import或者export的文件都被当成一个模块。相反地，如果一个文件不带有顶级的import或者export声明，那么它的内容被视为全局可见的（因此对模块也是可见的）
+ok，让我们看一个小例子
 
+命名空间中通过export将想要暴露的部分导出
+
+如果不用export 导出是无法读取其值的
+
+```tsx
+namespace a {
+    export const Time: number = 1000
+    export const fn = <T>(arg: T): T => {
+        return arg
+    }
+    fn(Time)
+}
+ 
+ 
+namespace b {
+     export const Time: number = 1000
+     export const fn = <T>(arg: T): T => {
+        return arg
+    }
+    fn(Time)
+}
+ 
+a.Time
+b.Time
+```
+
+嵌套命名空间
+
+```tsx
+namespace a {
+    export namespace b {
+        export class Vue {
+            parameters: string
+            constructor(parameters: string) {
+                this.parameters = parameters
+            }
+        }
+    }
+}
+ 
+let v = a.b.Vue
+ 
+new v('1')
+```
+
+抽离命名空间
+
+```tsx
+//a.ts
+export namespace V {
+    export const a = 1
+}
+//b.ts
+import {V} from '../observer/index'
+console.log(V);
+ //{a:1}
+```
+
+简化命名空间
+
+```tsx
+namespace A  {
+    export namespace B {
+        export const C = 1
+    }
+}
+ 
+import X = A.B.C
+ 
+console.log(X);
+```
+
+合并命名空间
+
+重名的命名空间会合并
+
+![](https://img-blog.csdnimg.cn/bf816965597949c69329ad5f17e0efd5.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5bCP5ruhenM=,size_20,color_FFFFFF,t_70,g_se,x_16)
+
+## 19、三斜线指令
+
+三斜线指令是包含单个XML标签的单行注释。 注释的内容会做为编译器指令使用。
+
+三斜线指令仅可放在包含它的文件的最顶端。 一个三斜线指令的前面只能出现单行或多行注释，这包括其它的三斜线指令。 如果它们出现在一个语句或声明之后，那么它们会被当做普通的单行注释，并且不具有特殊的涵义。
+
+/// <reference path="..." />指令是三斜线指令中最常见的一种。 它用于声明文件间的 依赖。
+
+三斜线引用告诉编译器在编译过程中要引入的额外的文件。
+
+你也可以把它理解能import，它可以告诉编译器在编译过程中要引入的额外的文件
+
+```tsx
+//例如a.ts
+namespace A {
+    export const fn = () => 'a'
+}
+//b.ts
+namespace A {
+    export const fn2 = () => 'b'
+}
+//index.ts
+//引入之后直接可以使用变量A
+///<reference path="./index2.ts" />
+///<reference path="./index3.ts" />
+console.log(A);
+```
+
+声明文件引入
+
+例如，把 /// <reference types="node" />引入到声明文件，表明这个文件使用了 @types/node/index.d.ts里面声明的名字； 并且，这个包需要在编译阶段与声明文件一起被包含进来。
+
+仅当在你需要写一个d.ts文件时才使用这个指令。
+///<reference types="node" />
+
+注意事项：
+
+如果你在配置文件 配置了noResolve 或者自身调用自身文件会报错
+
+![](https://img-blog.csdnimg.cn/d5f623bd195e4d6c8104b151a0dd2e09.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5bCP5ruhenM=,size_20,color_FFFFFF,t_70,g_se,x_16)
 
 
 
