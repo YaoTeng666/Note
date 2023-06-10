@@ -1604,7 +1604,7 @@ console.log(X);
 
 重名的命名空间会合并
 
-![](https://img-blog.csdnimg.cn/bf816965597949c69329ad5f17e0efd5.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5bCP5ruhenM=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![img2](./TypeScript.assets/img2.png)
 
 ## 19、三斜线指令
 
@@ -1645,7 +1645,145 @@ console.log(A);
 
 如果你在配置文件 配置了noResolve 或者自身调用自身文件会报错
 
-![](https://img-blog.csdnimg.cn/d5f623bd195e4d6c8104b151a0dd2e09.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBA5bCP5ruhenM=,size_20,color_FFFFFF,t_70,g_se,x_16)
+![d5f623bd195e4d6c8104b151a0dd2e09](./TypeScript.assets/d5f623bd195e4d6c8104b151a0dd2e09.png)
+
+## 20、声明文件
+
+Declare 声明文件
+
+当使用第三方库时，我们需要引用它的声明文件，才能获得对应的代码补全、接口提示等功能。
+
+```tsx
+declare var 声明全局变量
+declare function 声明全局方法
+declare class 声明全局类
+declare enum 声明全局枚举类型
+declare namespace 声明（含有子属性的）全局对象
+interface 和 type 声明全局类型
+/// <reference /> 三斜线指令
+```
+
+1、第一种引入声明文件的方式是：
+
+ 发现express 报错了
+
+让我们去下载他的声明文件
+
+npm install @types/node -D
+
+那为什么axios 没有报错
+
+我们可以去node_modules 下面去找axios 的package json 发现axios已经指定了声明文件 所以没有报错可以直接用通过语法declare 暴露我们声明的axios 对象
+
+如果有一些第三方包确实没有声明文件我们可以自己去定义
+
+名称.d.ts 创建一个文件去声明
+
+2、手写声明文件：
+
+```tsx
+//index.ts
+import express from 'express'
+ 
+ 
+const app = express()
+ 
+const router = express.Router()
+ 
+app.use('/api', router)
+ 
+router.get('/list', (req, res) => {
+    res.json({
+        code: 200
+    })
+})
+ 
+app.listen(9001,()=>{
+    console.log(9001)
+})
+
+//express.d.ts
+declare module 'express' {
+    interface Router {
+        get(path: string, cb: (req: any, res: any) => void): void
+    }
+    interface App {
+ 
+        use(path: string, router: any): void
+        listen(port: number, cb?: () => void): void
+    }
+    interface Express {
+        (): App
+        Router(): Router
+ 
+    }
+    const express: Express
+    export default express
+}
+```
+
+TS声明包收录到这个网站中：https://www.npmjs.com/~types?activeTab=packages
+
+## 21、Mixins混入
+
+[TypeScript](https://so.csdn.net/so/search?q=TypeScript&spm=1001.2101.3001.7020) 混入 Mixins 其实vue也有mixins这个东西 你可以把他看作为合并
+
+1、对象混入
+
+可以使用es6的Object.assign 合并多个对象
+
+此时 people 会被推断成一个交差类型 Name & Age & sex;
+
+```tsx
+interface Name {
+    name: string
+}
+interface Age {
+    age: number
+}
+interface Sex {
+    sex: number
+}
+ 
+let people1: Name = { name: "小满" }
+let people2: Age = { age: 20 }
+let people3: Sex = { sex: 1 }
+ 
+const people = Object.assign(people1,people2,people3)
+```
+
+下面创建一个类，结合了这两个mixins
+
+首先应该注意到的是，没使用extends而是使用implements。 把类当成了接口
+
+我们可以这么做来达到目的，为将要mixin进来的属性方法创建出占位属性。 这告诉编译器这些成员在运行时是可用的。 这样就能使用mixin带来的便利，虽说需要提前定义一些占位属性
+
+```tsx
+class C implements A,B{
+    type:boolean
+    changeType:()=>void;
+    name: string;
+    getName:()=> string
+}
+```
+
+最后，创建这个帮助函数，帮我们做混入操作。 它会遍历mixins上的所有属性，并复制到目标上去，把之前的占位属性替换成真正的实现代码
+
+Object.getOwnPropertyNames()可以获取对象自身的属性，除去他继承来的属性，
+对它所有的属性遍历，它是一个数组，遍历一下它所有的属性名
+
+```tsx
+Mixins(C, [A, B])
+function Mixins(curCls: any, itemCls: any[]) {
+    itemCls.forEach(item => {
+        Object.getOwnPropertyNames(item.prototype).forEach(name => {
+            curCls.prototype[name] = item.prototype[name]
+        })
+    })
+}
+```
+
+
 
 
 
