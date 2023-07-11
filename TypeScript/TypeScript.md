@@ -1785,6 +1785,10 @@ function Mixins(curCls: any, itemCls: any[]) {
 
 
 
+## 22、装饰器Decorator
+
+### 类装饰器
+
 
 
 
