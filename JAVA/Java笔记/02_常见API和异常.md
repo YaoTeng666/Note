@@ -372,6 +372,74 @@ Public string tostring 返回此可抛出的简短描述
 
 public void printstacktrace() 把异常的错误信息输出在控制台
 
+```java
+String str ="mayikt";
+int i =Integer.parseInt(str);
+System.out.println(i)
+
+//底层判断str是否是为数字
+1、如果不是数字new NumberFormatException("For input string:\""+s+"\"");数字类型转化异常
+2、传递给了我们public Throwable（String message）构造方法
+```
+
+
+
+## 28、编译时与运行时异常
+
+Java的异常分为二大类异常：编译时异常和运行时异常，也被称为受检异常和非受检异常所有的RuntimeException类及子类都被称为运行时异常，其他的异常都是编译时异常。
+
+编译时异常：必须显示处理，否则程序会放生错误，无法通过编译。
+
+运行时异常：无需显示处理，也可以通过编译时异常一样处理。
+
+
+
+## 29、异常处理之throws
+
+```java
+//调用
+try{
+  a1();
+}
+catch(Exception e){
+  e.printStackTrace();
+}
+
+//编译时异常，调用直接报错了，必须trycatch或者向上抛异常
+public static void a1() throws Exception{
+  int[] arr =new int[3];
+  System.out.println(arr[4]);
+}
+
+//ArrayIndexOutOfBoundsException是一个运行时异常，所以在main中调用时不会报错
+pubilc static void a4() throws ArrayIndexOutOfBoundsException{
+    int[] arr =new int[3];
+  System.out.println(arr[4]);
+}
+
+```
+
+## 30、如何自定义编译和运行时异常
+
+```java
+//自定义类并继承Exception
+//注意的点是，继承Exception的是为编译时异常，写代码就会报错，runtimeException是运行时异常，所以跑起来才会报错
+public class LoginException extends Exception{
+  public LoginException(String message){
+    super("message")
+  }
+}
+
+//使用执行
+throw new LoginException("用户输入的名称和密码不正确")
+  
+//发生呢了异常，要么向上抛，要么trycatch包含代码
+```
+
+
+
+
+
 
 
 
